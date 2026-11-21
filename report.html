@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tamil Nadu Gold Market Report | Daily, Weekly & Monthly Analysis</title>
+  <meta name="description" content="Official Tamil Nadu Gold Market Report based on MJDMA Chennai benchmark rates. Daily, Weekly, and Monthly price trends, charts, and analytics.">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            gold: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              200: '#fde68a',
+              300: '#fcd34d',
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309',
+              800: '#92400e',
+              900: '#78350f',
+            },
+            cardbg: '#111827',
+            darkbg: '#0B0F19'
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Chart.js via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .gold-gradient {
+      background: linear-gradient(135deg, #F59E0B 0%, #D97706 50%, #B45309 100%);
+    }
+    .card-glass {
+      background: rgba(17, 24, 39, 0.9);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    @media print {
+      body { background: #ffffff !important; color: #000000 !important; }
+      .no-print { display: none !important; }
+      .card-glass { background: #ffffff !important; border: 1px solid #e5e7eb !important; box-shadow: none !important; color: #000000 !important; }
+      .text-white { color: #111827 !important; }
+      .text-gray-400, .text-gray-500 { color: #4b5563 !important; }
+      .bg-gray-900, .bg-[#0E1424] { background: #f9fafb !important; border: 1px solid #e5e7eb !important; }
+      canvas { max-height: 280px !important; }
+    }
+  </style>
+</head>
+<body class="bg-[#0B0F19] text-slate-100 min-h-screen antialiased flex flex-col selection:bg-gold-500 selection:text-black">
+
+  <!-- Header & Navigation -->
+  <header class="border-b border-gray-800 bg-[#0E1424]/90 sticky top-0 z-50 backdrop-blur-md no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Back Link & Title -->
+      <div class="flex items-center space-x-3">
+        <a href="index.html" class="flex items-center space-x-2 text-xs font-semibold text-gray-400 hover:text-white transition-all bg-gray-800/80 px-3 py-1.5 rounded-lg border border-gray-700">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span class="hidden sm:inline">Calculator</span>
+        </a>
+        <div class="h-5 w-px bg-gray-800"></div>
+        <div class="flex items-center space-x-2">
+          <div class="w-8 h-8 rounded-lg gold-gradient flex items-center justify-center text-black font-extrabold text-sm">
+            <i class="fa-solid fa-chart-column"></i>
+          </div>
+          <div>
+            <h1 class="font-extrabold text-sm sm:text-base text-white tracking-tight">MARKET INTELLIGENCE REPORT</h1>
+            <p class="text-[10px] text-gray-400">Tamil Nadu • MJDMA Benchmark</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Tools -->
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <button onclick="exportCSV()" class="flex items-center space-x-1.5 text-xs bg-gray-800 hover:bg-gray-700 text-gray-200 px-3 py-1.5 rounded-lg border border-gray-700 font-semibold transition-all">
+          <i class="fa-solid fa-file-csv text-emerald-400"></i>
+          <span class="hidden sm:inline">Export CSV</span>
+        </button>
+        <button onclick="window.print()" class="flex items-center space-x-1.5 text-xs bg-gold-500 hover:bg-gold-400 text-black px-3.5 py-1.5 rounded-lg font-bold shadow-md transition-all">
+          <i class="fa-solid fa-print"></i>
+          <span>Print / PDF</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main Report Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+
+    <!-- Executive Title Banner -->
+    <div class="card-glass rounded-3xl p-6 sm:p-8 border border-gray-800 shadow-2xl relative overflow-hidden">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-gold-500/10 text-gold-400 text-xs font-bold uppercase tracking-wider mb-2">
+            <i class="fa-solid fa-file-lines"></i>
+            <span>Tamil Nadu Bullion & Retail Report</span>
+          </div>
+          <h2 class="text-2xl sm:text-4xl font-black text-white tracking-tight">
+            Gold Price Market Report
+          </h2>
+          <p class="text-xs sm:text-sm text-gray-400 mt-1">
+            Official daily, weekly, and monthly tracking based on the Madras Jewellers & Diamond Merchants Association (MJDMA).
+          </p>
+        </div>
+
+        <!-- Report Period Tabs -->
+        <div class="no-print self-start md:self-auto inline-flex bg-gray-900 p-1.5 rounded-2xl border border-gray-700 text-xs sm:text-sm font-bold">
+          <button id="btn-tab-daily" onclick="switchReportTab('daily')"
+            class="px-4 py-2 rounded-xl transition-all text-gray-400 hover:text-white">
+            <i class="fa-solid fa-calendar-day mr-1.5"></i> Daily Report
+          </button>
+          <button id="btn-tab-weekly" onclick="switchReportTab('weekly')"
+            class="px-4 py-2 rounded-xl transition-all bg-gold-500 text-black shadow-md font-extrabold">
+            <i class="fa-solid fa-calendar-week mr-1.5"></i> Weekly (7D)
+          </button>
+          <button id="btn-tab-monthly" onclick="switchReportTab('monthly')"
+            class="px-4 py-2 rounded-xl transition-all text-gray-400 hover:text-white">
+            <i class="fa-solid fa-calendar-days mr-1.5"></i> Monthly (30D)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Metric Cards Grid (Dynamic) -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="kpi-grid">
+      <!-- Populated via JS -->
+    </div>
+
+    <!-- Chart Visualization Section -->
+    <div class="card-glass rounded-3xl p-6 border border-gray-800 shadow-xl space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold text-white flex items-center space-x-2" id="chart-heading">
+            <i class="fa-solid fa-chart-line text-gold-400"></i>
+            <span>7-Day Sovereign Price Movement</span>
+          </h3>
+          <p class="text-xs text-gray-400" id="chart-subheading">Daily closing 22K 1 Sovereign (8 Grams / பவுன்) rate</p>
+        </div>
+        <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-gold-500/10 text-gold-300 border border-gold-500/20" id="chart-badge">
+          7 Days Trajectory
+        </span>
+      </div>
+
+      <!-- Chart.js Canvas -->
+      <div class="relative w-full h-64 sm:h-80">
+        <canvas id="reportChart"></canvas>
+      </div>
+    </div>
+
+    <!-- VIEW 1: DAILY REPORT BREAKDOWN (Displayed when 'daily' is active) -->
+    <div id="view-daily" class="hidden space-y-6">
+      
+      <!-- Daily Purity & Weights Matrix -->
+      <div class="card-glass rounded-3xl p-6 border border-gray-800 space-y-4">
+        <h3 class="text-base font-bold text-white flex items-center space-x-2">
+          <i class="fa-solid fa-scale-balanced text-gold-400"></i>
+          <span>Today's Complete Weight & Purity Price Matrix</span>
+        </h3>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="bg-gray-900/80 text-gray-400 uppercase text-[11px] font-bold border-b border-gray-800">
+              <tr>
+                <th class="py-3 px-4">Purity Category</th>
+                <th class="py-3 px-4">1 Gram</th>
+                <th class="py-3 px-4">8 Grams (1 Sovereign)</th>
+                <th class="py-3 px-4">10 Grams</th>
+                <th class="py-3 px-4">100 Grams (Bullion Bar)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800/60 text-gray-200" id="daily-matrix-tbody">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Quick Retail Buying Estimates for Today -->
+      <div class="card-glass rounded-3xl p-6 border border-gray-800 space-y-4">
+        <h3 class="text-base font-bold text-white flex items-center space-x-2">
+          <i class="fa-solid fa-gem text-gold-400"></i>
+          <span>Today's Standard Jewelry Buying Estimates (Ready Reckoner)</span>
+        </h3>
+        <p class="text-xs text-gray-400">Includes estimated store making charges/wastage (VA) and mandatory 3% GST + HUID fee.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="daily-ornament-cards">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- VIEW 2 & 3: HISTORICAL LEDGER TABLE (Displayed for Weekly & Monthly) -->
+    <div id="view-ledger" class="card-glass rounded-3xl p-6 border border-gray-800 space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center space-x-2">
+            <i class="fa-solid fa-clock-rotate-left text-gold-400"></i>
+            <span id="ledger-title">Historical Price Ledger</span>
+          </h3>
+          <p class="text-xs text-gray-400" id="ledger-subtitle">Daily recorded benchmarks and fluctuations</p>
+        </div>
+        <div class="text-xs text-gray-400">
+          Showing <span id="ledger-count" class="font-bold text-white">7</span> recorded days
+        </div>
+      </div>
+
+      <div class="overflow-x-auto rounded-xl border border-gray-800 bg-[#0E1424]">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-gray-900/90 text-gray-400 uppercase tracking-wider font-bold text-[11px] border-b border-gray-800">
+            <tr>
+              <th class="py-3 px-4">Date</th>
+              <th class="py-3 px-4">22K 1 Sovereign (8g)</th>
+              <th class="py-3 px-4">22K / Gram</th>
+              <th class="py-3 px-4">24K Pure / Gram</th>
+              <th class="py-3 px-4">USD/INR Rate</th>
+              <th class="py-3 px-4">Int'l Spot ($/oz)</th>
+              <th class="py-3 px-4 text-right">Daily Fluctuation</th>
+            </tr>
+          </thead>
+          <tbody id="ledger-tbody" class="divide-y divide-gray-800/60 font-medium text-gray-300">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-gray-800/80 bg-[#0A0D16] py-6 text-center text-xs text-gray-500 no-print">
+    <div class="max-w-7xl mx-auto px-4">
+      <p class="text-gray-400">Tamil Nadu Gold Market Report • Chennai MJDMA Benchmark</p>
+      <p class="mt-1 text-[11px]">Exchange rates and bullion data synced via financial API feeds.</p>
+    </div>
+  </footer>
+
+  <!-- Report Data & Chart Engine -->
+  <script>
+    let activeTab = 'weekly';
+    let chartInstance = null;
+
+    // Load or generate 30-day historical seed
+    function loadReportHistory() {
+      const cached = localStorage.getItem('tn_gold_history_data');
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        } catch (e) {}
+      }
+
+      // 30-Day seeded data
+      const baseDate = new Date('2026-11-21T09:30:00+05:30');
+      const seed = [
+        { d: -30, spot: 3510, fx: 92.50, diff: -150 },
+        { d: -29, spot: 3515, fx: 92.55, diff: +120 },
+        { d: -28, spot: 3522, fx: 92.60, diff: +210 },
+        { d: -27, spot: 3518, fx: 92.58, diff: -90 },
+        { d: -26, spot: 3525, fx: 92.65, diff: +180 },
+        { d: -25, spot: 3530, fx: 92.70, diff: +240 },
+        { d: -24, spot: 3528, fx: 92.68, diff: -50 },
+        { d: -23, spot: 3535, fx: 92.75, diff: +220 },
+        { d: -22, spot: 3540, fx: 92.80, diff: +190 },
+        { d: -21, spot: 3538, fx: 92.78, diff: -70 },
+        { d: -20, spot: 3545, fx: 92.85, diff: +230 },
+        { d: -19, spot: 3542, fx: 92.82, diff: -80 },
+        { d: -18, spot: 3550, fx: 92.90, diff: +280 },
+        { d: -17, spot: 3555, fx: 92.95, diff: +160 },
+        { d: -16, spot: 3552, fx: 92.92, diff: -110 },
+        { d: -15, spot: 3558, fx: 93.00, diff: +240 },
+        { d: -14, spot: 3562, fx: 93.05, diff: +150 },
+        { d: -13, spot: 3560, fx: 93.02, diff: -80 },
+        { d: -12, spot: 3568, fx: 93.10, diff: +310 },
+        { d: -11, spot: 3572, fx: 93.15, diff: +170 },
+        { d: -10, spot: 3565, fx: 93.08, diff: -280 },
+        { d: -9,  spot: 3570, fx: 93.12, diff: +190 },
+        { d: -8,  spot: 3575, fx: 93.18, diff: +220 },
+        { d: -7,  spot: 3570, fx: 93.15, diff: -180 },
+        { d: -6,  spot: 3565, fx: 93.10, diff: -210 },
+        { d: -5,  spot: 3558, fx: 93.05, diff: -260 },
+        { d: -4,  spot: 3550, fx: 93.00, diff: -310 },
+        { d: -3,  spot: 3555, fx: 93.08, diff: +200 },
+        { d: -2,  spot: 3556, fx: 93.00, diff: -470 },
+        { d: -1,  spot: 3556, fx: 93.00, diff: 0 },
+        { d: 0,   spot: 3556, fx: 93.37, diff: +368 }
+      ];
+
+      return seed.map(item => {
+        const d = new Date(baseDate);
+        d.setDate(d.getDate() + item.d);
+        const dateStr = d.toISOString().split('T')[0];
+        const usdPerG = item.spot / 31.1034768;
+        const landed = (usdPerG * item.fx) * 1.06;
+        const b24k = Math.round(landed * 1.1141);
+        const b22k = Math.round(b24k * (22 / 24));
+        const sov = b22k * 8;
+        return {
+          date: dateStr,
+          spot: item.spot,
+          fx: item.fx,
+          board24k: b24k,
+          board22k: b22k,
+          sovereign: sov,
+          diff: item.diff
+        };
+      });
+    }
+
+    function formatINR(val) {
+      return '₹ ' + Math.round(val).toLocaleString('en-IN');
+    }
+
+    function switchReportTab(tab) {
+      activeTab = tab;
+      
+      // Update Tab Styles
+      ['daily', 'weekly', 'monthly'].forEach(t => {
+        const btn = document.getElementById(`btn-tab-${t}`);
+        if (btn) {
+          if (t === tab) {
+            btn.className = 'px-4 py-2 rounded-xl transition-all bg-gold-500 text-black shadow-md font-extrabold';
+          } else {
+            btn.className = 'px-4 py-2 rounded-xl transition-all text-gray-400 hover:text-white';
+          }
+        }
+      });
+
+      renderActiveView();
+    }
+
+    function renderActiveView() {
+      const history = loadReportHistory();
+      const latest = history[history.length - 1];
+
+      // Toggle View Sections
+      const viewDaily = document.getElementById('view-daily');
+      const viewLedger = document.getElementById('view-ledger');
+
+      if (activeTab === 'daily') {
+        viewDaily.classList.remove('hidden');
+        renderDailySection(latest);
+      } else {
+        viewDaily.classList.add('hidden');
+      }
+
+      // Filter slice based on tab
+      let sliceCount = 7;
+      if (activeTab === 'daily') sliceCount = 1;
+      else if (activeTab === 'weekly') sliceCount = 7;
+      else if (activeTab === 'monthly') sliceCount = 30;
+
+      const filtered = history.slice(-sliceCount);
+      renderKPIs(filtered);
+      renderChart(filtered);
+      renderLedgerTable(filtered);
+    }
+
+    function renderKPIs(data) {
+      const kpiGrid = document.getElementById('kpi-grid');
+      const latest = data[data.length - 1];
+      const first = data[0];
+
+      const prices = data.map(d => d.sovereign);
+      const high = Math.max(...prices);
+      const low = Math.min(...prices);
+      const avg = Math.round(prices.reduce((a, b) => a + b, 0) / prices.length);
+
+      const netDiff = latest.sovereign - first.sovereign;
+      const netPct = ((netDiff / first.sovereign) * 100).toFixed(2);
+      const isUp = netDiff >= 0;
+
+      let labelMovement = activeTab === 'daily' ? "Today's Change" : (activeTab === 'weekly' ? '7-Day Net Change' : '30-Day Net Return');
+
+      kpiGrid.innerHTML = `
+        <div class="card-glass p-5 rounded-2xl border border-gray-800">
+          <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">22K 1 Sovereign (8g)</p>
+          <p class="text-2xl sm:text-3xl font-black text-white mt-1">${formatINR(latest.sovereign)}</p>
+          <p class="text-xs text-gold-400 mt-1 font-semibold">22K: ${formatINR(latest.board22k)} / g</p>
+        </div>
+
+        <div class="card-glass p-5 rounded-2xl border border-gray-800">
+          <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">${labelMovement}</p>
+          <p class="text-2xl sm:text-3xl font-black ${isUp ? 'text-emerald-400' : 'text-rose-400'} mt-1">
+            ${isUp ? '+' : ''}${formatINR(netDiff)}
+          </p>
+          <p class="text-xs ${isUp ? 'text-emerald-400' : 'text-rose-400'} mt-1 font-semibold">
+            ${isUp ? '▲ +' : '▼ '}${netPct}% in period
+          </p>
+        </div>
+
+        <div class="card-glass p-5 rounded-2xl border border-gray-800">
+          <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Period High / Peak</p>
+          <p class="text-2xl sm:text-3xl font-black text-amber-300 mt-1">${formatINR(high)}</p>
+          <p class="text-xs text-gray-400 mt-1">Sovereign Peak Level</p>
+        </div>
+
+        <div class="card-glass p-5 rounded-2xl border border-gray-800">
+          <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Period Low / Avg</p>
+          <p class="text-2xl sm:text-3xl font-black text-blue-400 mt-1">${formatINR(low)}</p>
+          <p class="text-xs text-gray-400 mt-1">Avg: ${formatINR(avg)} / pavan</p>
+        </div>
+      `;
+    }
+
+    function renderDailySection(latest) {
+      // 1. Matrix
+      const matrixTbody = document.getElementById('daily-matrix-tbody');
+      const b22k = latest.board22k;
+      const b24k = latest.board24k;
+      const b18k = Math.round(b24k * (18 / 24));
+
+      matrixTbody.innerHTML = `
+        <tr class="hover:bg-gray-800/40">
+          <td class="py-3 px-4 font-bold text-gold-400">22 Karat (916 Hallmarked)</td>
+          <td class="py-3 px-4 font-bold text-white">${formatINR(b22k)}</td>
+          <td class="py-3 px-4 font-extrabold text-amber-300">${formatINR(b22k * 8)}</td>
+          <td class="py-3 px-4 text-gray-200">${formatINR(b22k * 10)}</td>
+          <td class="py-3 px-4 text-gray-200">${formatINR(b22k * 100)}</td>
+        </tr>
+        <tr class="hover:bg-gray-800/40">
+          <td class="py-3 px-4 font-bold text-blue-400">24 Karat (999 Pure Bullion)</td>
+          <td class="py-3 px-4 font-bold text-white">${formatINR(b24k)}</td>
+          <td class="py-3 px-4 font-extrabold text-blue-300">${formatINR(b24k * 8)}</td>
+          <td class="py-3 px-4 text-gray-200">${formatINR(b24k * 10)}</td>
+          <td class="py-3 px-4 text-gray-200">${formatINR(b24k * 100)}</td>
+        </tr>
+        <tr class="hover:bg-gray-800/40 text-gray-400">
+          <td class="py-3 px-4 font-bold text-gray-300">18 Karat (750 Diamond Jewelry)</td>
+          <td class="py-3 px-4 font-bold text-white">${formatINR(b18k)}</td>
+          <td class="py-3 px-4 font-bold text-gray-300">${formatINR(b18k * 8)}</td>
+          <td class="py-3 px-4 text-gray-300">${formatINR(b18k * 10)}</td>
+          <td class="py-3 px-4 text-gray-300">${formatINR(b18k * 100)}</td>
+        </tr>
+      `;
+
+      // 2. Jewelry ready reckoner cards
+      const ornamentGrid = document.getElementById('daily-ornament-cards');
+      const items = [
+        { name: 'Plain Gold Coin (8g / 1 Pavan)', weight: 8, va: 2.0, icon: 'fa-coins' },
+        { name: 'Machine Chain / Daily Bangle (16g / 2 Pavans)', weight: 16, va: 9.0, icon: 'fa-link' },
+        { name: 'Bridal Haram / Temple Necklace (32g / 4 Pavans)', weight: 32, va: 18.0, icon: 'fa-crown' }
+      ];
+
+      ornamentGrid.innerHTML = items.map(item => {
+        const goldVal = item.weight * b22k;
+        const making = goldVal * (item.va / 100);
+        const subtotal = goldVal + making;
+        const gst = subtotal * 0.03;
+        const total = Math.round(subtotal + gst + 53.10);
+        return `
+          <div class="bg-[#0E1424] p-5 rounded-2xl border border-gray-800 space-y-3">
+            <div class="flex items-center space-x-2.5">
+              <div class="w-8 h-8 rounded-lg bg-gold-500/10 text-gold-400 flex items-center justify-center text-sm">
+                <i class="fa-solid ${item.icon}"></i>
+              </div>
+              <h4 class="font-bold text-white text-xs sm:text-sm">${item.name}</h4>
+            </div>
+            <div class="text-xs space-y-1.5 text-gray-400">
+              <div class="flex justify-between"><span>Gold (${item.weight}g @ ${formatINR(b22k)}):</span><span class="text-white">${formatINR(goldVal)}</span></div>
+              <div class="flex justify-between"><span>Making / VA (${item.va}%):</span><span class="text-white">${formatINR(making)}</span></div>
+              <div class="flex justify-between"><span>GST (3%) + BIS Fee:</span><span class="text-white">${formatINR(gst + 53)}</span></div>
+            </div>
+            <div class="pt-2 border-t border-gray-800 flex items-center justify-between">
+              <span class="text-xs font-bold text-gray-400">Total Bill:</span>
+              <span class="text-lg font-black text-amber-300">${formatINR(total)}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderChart(data) {
+      const ctx = document.getElementById('reportChart').getContext('2d');
+      const labels = data.map(d => d.date.split('-').slice(1).join('/'));
+      const values = data.map(d => d.sovereign);
+
+      // Heading update
+      document.getElementById('chart-heading').innerHTML = `
+        <i class="fa-solid fa-chart-line text-gold-400"></i>
+        <span>${activeTab === 'daily' ? "Today's Rate Benchmark" : (activeTab === 'weekly' ? '7-Day Sovereign Movement' : '30-Day Monthly Sovereign Trend')}</span>
+      `;
+      document.getElementById('chart-badge').innerText = activeTab === 'daily' ? 'Intraday Snapshot' : (activeTab === 'weekly' ? '7 Days' : '30 Days');
+
+      if (chartInstance) chartInstance.destroy();
+
+      const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+      gradient.addColorStop(0, 'rgba(245, 158, 11, 0.45)');
+      gradient.addColorStop(1, 'rgba(245, 158, 11, 0.0)');
+
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: '22K Sovereign (₹)',
+            data: values,
+            borderColor: '#F59E0B',
+            backgroundColor: gradient,
+            borderWidth: 2.5,
+            fill: true,
+            tension: 0.35,
+            pointBackgroundColor: '#F59E0B',
+            pointBorderColor: '#0B0F19',
+            pointRadius: activeTab === 'monthly' ? 2.5 : 4.5,
+            pointHoverRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#111827',
+              borderColor: '#374151',
+              borderWidth: 1,
+              titleColor: '#F9FAFB',
+              bodyColor: '#FCD34D',
+              callbacks: {
+                label: function(context) {
+                  return ' Sovereign: ₹ ' + context.parsed.y.toLocaleString('en-IN');
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#9CA3AF', font: { size: 10 } }
+            },
+            y: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: {
+                color: '#9CA3AF',
+                font: { size: 10 },
+                callback: function(value) {
+                  return '₹ ' + (value / 1000).toFixed(0) + 'k';
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function renderLedgerTable(data) {
+      const tbody = document.getElementById('ledger-tbody');
+      document.getElementById('ledger-count').innerText = data.length;
+      document.getElementById('ledger-title').innerText = activeTab === 'weekly' ? '7-Day Historical Ledger' : (activeTab === 'monthly' ? '30-Day Historical Ledger' : 'Daily Transaction Record');
+
+      const rows = [...data].reverse();
+      tbody.innerHTML = rows.map(r => {
+        const chg = r.diff || 0;
+        const isUp = chg > 0;
+        const isDown = chg < 0;
+        const badgeColor = isUp ? 'text-emerald-400 bg-emerald-500/10' : (isDown ? 'text-rose-400 bg-rose-500/10' : 'text-gray-400 bg-gray-800');
+        const badgeText = isUp ? `+${formatINR(chg)} ▲` : (isDown ? `${formatINR(chg)} ▼` : '0 -');
+
+        return `
+          <tr class="hover:bg-gray-800/40 transition-colors">
+            <td class="py-3 px-4 font-mono font-bold text-white">${r.date}</td>
+            <td class="py-3 px-4 font-bold text-amber-300">${formatINR(r.sovereign)}</td>
+            <td class="py-3 px-4 font-semibold text-white">${formatINR(r.board22k)}</td>
+            <td class="py-3 px-4 text-gray-300">${formatINR(r.board24k)}</td>
+            <td class="py-3 px-4 text-gray-400 font-mono">₹ ${r.fx.toFixed(2)}</td>
+            <td class="py-3 px-4 text-gray-400 font-mono">$${r.spot}</td>
+            <td class="py-3 px-4 text-right">
+              <span class="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full ${badgeColor}">
+                ${badgeText}
+              </span>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function exportCSV() {
+      const history = loadReportHistory();
+      let csv = 'Date,Gold Spot ($/oz),USD/INR (INR),24K 1g (INR),22K 1g (INR),22K 1 Sovereign (INR),Daily Change (INR)\n';
+      history.forEach(r => {
+        csv += `${r.date},${r.spot},${r.fx},${r.board24k},${r.board22k},${r.sovereign},${r.diff}\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `TamilNadu_Gold_Market_Report_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderActiveView();
+    });
+  </script>
+</body>
+</html>

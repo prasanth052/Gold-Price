@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tamil Nadu Gold Rate Live | MJDMA Benchmark & Calculator</title>
+  <meta name="description" content="Live Tamil Nadu Gold Market Price Calculator, MJDMA Chennai benchmark rates, USD/INR and Gold Spot hourly auto-sync, and retail jewelry cost estimator.">
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            gold: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              200: '#fde68a',
+              300: '#fcd34d',
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309',
+              800: '#92400e',
+              900: '#78350f',
+            },
+            darkbg: '#0B0F19',
+            cardbg: '#111827',
+            cardborder: '#1F2937'
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .gold-gradient {
+      background: linear-gradient(135deg, #F59E0B 0%, #D97706 50%, #B45309 100%);
+    }
+    .card-glass {
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .pulse-dot {
+      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+      animation: pulse-green 2s infinite;
+    }
+    @keyframes pulse-green {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    }
+  </style>
+</head>
+<body class="bg-[#0B0F19] text-slate-100 min-h-screen antialiased flex flex-col selection:bg-gold-500 selection:text-black">
+
+  <!-- Top Announcement / Live Ticker Bar -->
+  <header class="border-b border-gray-800 bg-[#0E1424]/90 sticky top-0 z-50 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Logo & City Tag -->
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl gold-gradient flex items-center justify-center shadow-lg shadow-gold-500/20 text-black font-extrabold text-xl">
+          <i class="fa-solid fa-coins"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="font-extrabold text-lg sm:text-xl tracking-tight text-white">TN GOLD PULSE</h1>
+            <span class="text-xs bg-gold-500/20 text-gold-300 font-semibold px-2 py-0.5 rounded-full border border-gold-500/30">Chennai / MJDMA</span>
+          </div>
+          <p class="text-xs text-gray-400 hidden sm:block">Tamil Nadu Daily Bullion & Retail Jewelry Benchmark</p>
+        </div>
+      </div>
+
+      <!-- Live FX & Gold Spot Status Widgets -->
+      <div class="flex items-center space-x-2 sm:space-x-4">
+        
+        <!-- Live Pill: Gold Spot -->
+        <div class="hidden md:flex items-center space-x-2 bg-gray-800/80 border border-gray-700/60 px-3 py-1.5 rounded-lg text-xs">
+          <span class="w-2 h-2 rounded-full bg-amber-400 pulse-dot"></span>
+          <span class="text-gray-400">Gold Spot:</span>
+          <span id="gold-spot-display" class="font-bold text-gold-300 tracking-wide">$3,556.00</span>
+        </div>
+
+        <!-- Live Pill: USD/INR -->
+        <div class="flex items-center space-x-2 bg-gray-800/80 border border-gray-700/60 px-3 py-1.5 rounded-lg text-xs">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 pulse-dot"></span>
+          <span class="text-gray-400">USD/INR:</span>
+          <span id="fx-rate-display" class="font-bold text-white tracking-wide">₹ 0</span>
+        </div>
+
+        <!-- Sync Button with Spinner (Refreshes BOTH APIs) -->
+        <button id="btn-sync" onclick="handleManualSync()" title="Refresh Gold & USD Rates" class="flex items-center space-x-1.5 bg-gray-800 hover:bg-gray-700 active:scale-95 transition-all text-xs text-gray-300 px-3 py-1.5 rounded-lg border border-gray-700">
+          <i id="sync-icon" class="fa-solid fa-arrows-rotate text-gold-400"></i>
+          <span class="hidden sm:inline" id="sync-text">Sync Live</span>
+        </button>
+
+        <!-- API Settings Modal Trigger -->
+        <button onclick="toggleApiModal(true)" title="API Settings" class="text-gray-400 hover:text-white p-2 rounded-lg bg-gray-800/60 hover:bg-gray-800 border border-gray-700 text-xs">
+          <i class="fa-solid fa-gear"></i>
+        </button>
+
+        <!-- Market Report Page Link -->
+        <a href="report.html" class="flex items-center space-x-1.5 bg-gold-500 hover:bg-gold-400 text-black font-extrabold text-xs px-3 py-1.5 rounded-lg shadow-md transition-all">
+          <i class="fa-solid fa-chart-column"></i>
+          <span>Reports</span>
+        </a>
+
+        <a href="#estimator" class="hidden lg:inline-flex items-center space-x-1.5 bg-gray-800 hover:bg-gray-700 text-gray-200 font-semibold text-xs px-3 py-1.5 rounded-lg border border-gray-700 transition-all">
+          <i class="fa-solid fa-calculator text-gold-400"></i>
+          <span>Estimator</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- Top Controls Banner: Inputs & Toggles -->
+    <div class="card-glass rounded-2xl p-5 border border-gray-800 shadow-xl">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+        
+        <!-- Input 1: International Gold Spot ($/oz) - Auto API with manual override -->
+        <div class="md:col-span-4">
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center">
+              <i class="fa-solid fa-earth-americas text-gold-400 mr-1.5"></i> Gold Spot Rate ($/oz)
+            </label>
+            <span id="gold-time-label" class="text-[10px] text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">
+              Live API
+            </span>
+          </div>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 font-bold">$</div>
+            <input type="number" id="spot-price-input" value="3556.00" step="0.5" min="1000" max="10000"
+              class="w-full pl-8 pr-16 py-2.5 bg-gray-900 border border-gray-700 rounded-xl text-white font-bold text-lg focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-all"
+              oninput="onManualGoldInput()">
+            <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-xs text-gray-400">USD / oz</div>
+          </div>
+        </div>
+
+        <!-- Input 2: USD/INR Exchange Rate (Auto-filled / Editable) -->
+        <div class="md:col-span-3">
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center">
+              <i class="fa-solid fa-money-bill-transfer text-emerald-400 mr-1.5"></i> USD/INR Rate
+            </label>
+            <span id="fx-time-label" class="text-[10px] text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded border border-emerald-400/20">
+              1-Hr Auto Sync
+            </span>
+          </div>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 font-bold">₹</div>
+            <input type="number" id="fx-rate-input" value="0" step="0.01" min="50" max="150"
+              class="w-full pl-8 pr-4 py-2.5 bg-gray-900 border border-gray-700 rounded-xl text-white font-bold text-lg focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-all"
+              oninput="recalculateAll()">
+          </div>
+        </div>
+
+        <!-- Mode Toggle: Board Rate vs Retail Rate (incl. 3% GST) -->
+        <div class="md:col-span-5 flex flex-col justify-end">
+          <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
+            <i class="fa-solid fa-receipt text-amber-400 mr-1"></i> Display Pricing Mode
+          </label>
+          <div class="grid grid-cols-2 bg-gray-900 p-1 rounded-xl border border-gray-700 text-xs font-semibold">
+            <button id="mode-board" onclick="setPriceMode('board')"
+              class="py-2 rounded-lg transition-all text-center bg-gold-500 text-black shadow-sm font-bold">
+              Board Rate (பலகை)
+            </button>
+            <button id="mode-retail" onclick="setPriceMode('retail')"
+              class="py-2 rounded-lg transition-all text-center text-gray-400 hover:text-white">
+              Retail (incl. 3% GST)
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Advanced Settings Bar -->
+      <div class="mt-4 pt-3 border-t border-gray-800/80 flex flex-wrap items-center justify-between text-xs text-gray-400 gap-3">
+        <div class="flex items-center space-x-4">
+          <span><strong class="text-gray-300">Duty:</strong> 6% (5% BCD + 1% AIDC)</span>
+          <span><strong class="text-gray-300">GST:</strong> 3%</span>
+          <span><strong class="text-gray-300">Ounce:</strong> 31.1035 g</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span>MJDMA Premium Spread:</span>
+          <select id="premium-select" onchange="recalculateAll()" class="bg-gray-800 text-white rounded-lg px-2.5 py-1 border border-gray-700 focus:outline-none focus:border-gold-500">
+            <option value="11.41" selected>11.41% (LiveChennai / MJDMA Market)</option>
+            <option value="0.00">0.00% (Pure Landed Import Parity)</option>
+            <option value="5.00">5.00% (Moderate Bullion Spread)</option>
+            <option value="15.00">15.00% (Peak Wedding / Festival Spread)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN RATE SHOWCASE -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- HERO CARD: 22K 1 Sovereign (8 Grams / பவுன்) -->
+      <div class="lg:col-span-7 rounded-3xl p-7 relative overflow-hidden bg-gradient-to-br from-amber-950/40 via-cardbg to-cardbg border-2 border-gold-500/40 shadow-2xl shadow-gold-950/30">
+        <div class="absolute -right-16 -top-16 w-56 h-56 bg-gold-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="flex items-start justify-between relative z-10 mb-4">
+          <div>
+            <div class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-gold-500/20 text-gold-300 border border-gold-500/40 text-xs font-bold tracking-wide uppercase">
+              <i class="fa-solid fa-crown text-gold-400"></i>
+              <span>Tamil Nadu Benchmark Standard</span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-2">
+              22K Standard Gold (916)
+            </h2>
+            <p class="text-xs text-gray-400 font-medium mt-0.5">Hallmarked Jewelry Grade • 1 Sovereign (8 Grams / 1 பவுன் / சவரன்)</p>
+          </div>
+          <span class="text-3xl sm:text-4xl">🪙</span>
+        </div>
+
+        <!-- Big Price Display -->
+        <div class="my-5 relative z-10">
+          <div class="flex items-baseline space-x-3">
+            <span class="text-4xl sm:text-6xl font-black tracking-tight text-white" id="hero-22k-sovereign">
+              ₹ 92,448
+            </span>
+            <span class="text-sm font-semibold text-gold-400 uppercase tracking-wider" id="hero-unit-tag">
+              / 8 Grams
+            </span>
+          </div>
+          <p class="text-xs text-emerald-400 mt-2 flex items-center space-x-1.5" id="hero-subtitle">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>Official Daily MJDMA Shop Board Display Benchmark</span>
+          </p>
+        </div>
+
+        <!-- 22K 1 Gram Quick Metric -->
+        <div class="pt-5 border-t border-gray-800 flex items-center justify-between text-sm relative z-10">
+          <div class="text-gray-400">
+            22K Rate per 1 Gram:
+            <strong class="text-white text-lg font-bold ml-1.5" id="rate-22k-1g">₹ 11,556</strong>
+          </div>
+          <div class="text-xs text-gray-400">
+            Purity Fineness: <span class="text-gold-400 font-bold">91.67% (22/24)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECONDARY CARDS: 24K Pure Gold & Bullion Coins -->
+      <div class="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+
+        <!-- 24K Pure Gold (1 Gram) -->
+        <div class="card-glass rounded-2xl p-5 border border-gray-800 hover:border-gray-700 transition-all shadow-lg flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-500/10 px-2.5 py-0.5 rounded-md border border-blue-500/20">
+              24 Karat • 999 Fine
+            </span>
+            <i class="fa-solid fa-award text-blue-400 text-lg"></i>
+          </div>
+          <div class="my-3">
+            <p class="text-xs text-gray-400 font-medium">Pure Gold Rate (1 Gram)</p>
+            <p class="text-2xl sm:text-3xl font-extrabold text-white mt-1" id="rate-24k-1g">₹ 12,607</p>
+          </div>
+          <p class="text-[11px] text-gray-500">Benchmark for bullion bars, minted coins & raw trade</p>
+        </div>
+
+        <!-- 24K Pure Gold (8 Grams / Minted Coin) -->
+        <div class="card-glass rounded-2xl p-5 border border-gray-800 hover:border-gray-700 transition-all shadow-lg flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-purple-400 bg-purple-500/10 px-2.5 py-0.5 rounded-md border border-purple-500/20">
+              24K Bullion Coin
+            </span>
+            <i class="fa-solid fa-cube text-purple-400 text-lg"></i>
+          </div>
+          <div class="my-3">
+            <p class="text-xs text-gray-400 font-medium">Pure Gold Rate (8 Grams / Coin)</p>
+            <p class="text-2xl sm:text-3xl font-extrabold text-white mt-1" id="rate-24k-8g">₹ 1,00,856</p>
+          </div>
+          <p class="text-[11px] text-gray-500">Pure bullion investment biscuit / Lakshmi coin</p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- SECTION: JEWELRY PURCHASE ESTIMATOR (STORE BILL CALCULATOR) -->
+    <section id="estimator" class="card-glass rounded-3xl p-6 sm:p-8 border border-gray-800 shadow-2xl">
+      <div class="max-w-3xl mb-6">
+        <div class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-gold-500/10 text-gold-400 text-xs font-bold uppercase tracking-wide mb-2">
+          <i class="fa-solid fa-receipt"></i>
+          <span>Tamil Nadu Store Billing Calculator</span>
+        </div>
+        <h3 class="text-2xl sm:text-3xl font-extrabold text-white">
+          Retail Jewelry Bill Estimator
+        </h3>
+        <p class="text-xs sm:text-sm text-gray-400 mt-1">
+          Calculate the actual take-home bill when buying necklaces, bangles, or chains in Chennai, Coimbatore, or Madurai (including Making/VA & 3% GST).
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Controls Column -->
+        <div class="lg:col-span-7 space-y-6">
+          
+          <!-- Ornament Weight Input -->
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <label class="text-xs font-bold uppercase text-gray-300 tracking-wider">
+                Ornament Weight
+              </label>
+              <div class="inline-flex bg-gray-900 p-0.5 rounded-lg border border-gray-700 text-xs">
+                <button id="unit-grams" onclick="setWeightUnit('grams')" class="px-3 py-1 rounded-md font-bold bg-gold-500 text-black">Grams</button>
+                <button id="unit-pavan" onclick="setWeightUnit('pavan')" class="px-3 py-1 rounded-md font-bold text-gray-400 hover:text-white">Pavans (8g)</button>
+              </div>
+            </div>
+            <div class="relative">
+              <input type="number" id="calc-weight" value="16" min="0.5" max="1000" step="0.5"
+                class="w-full pl-4 pr-16 py-3 bg-gray-900 border border-gray-700 rounded-xl text-white font-bold text-xl focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-all"
+                oninput="calculateJewelryBill()">
+              <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-sm text-gray-400 font-bold" id="calc-unit-label">
+                Grams
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 mt-2">
+              <span class="text-[11px] text-gray-500">Quick presets:</span>
+              <button onclick="setWeightPreset(8)" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-2 py-0.5 rounded border border-gray-700">1 Pavan (8g)</button>
+              <button onclick="setWeightPreset(16)" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-2 py-0.5 rounded border border-gray-700">2 Pavans (16g)</button>
+              <button onclick="setWeightPreset(32)" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-2 py-0.5 rounded border border-gray-700">4 Pavans (32g)</button>
+            </div>
+          </div>
+
+          <!-- Ornament Type Selector with Default VA % -->
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <label class="text-xs font-bold uppercase text-gray-300 tracking-wider">
+                <i class="fa-solid fa-gem text-gold-400 mr-1"></i> Select Ornament Type
+              </label>
+              <span class="text-[11px] text-gray-400">Sets Default VA %</span>
+            </div>
+            <select id="ornament-select" onchange="onOrnamentChange()"
+              class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3.5 py-2.5 text-white font-semibold text-xs sm:text-sm focus:outline-none focus:border-gold-500">
+              <option value="2.0">Gold Coin / Lakshmi Biscuit (Default: 2%)</option>
+              <option value="8.0">Plain Chain / Rope Chain (Default: 8%)</option>
+              <option value="10.0">Plain Bangles / Kada (Default: 10%)</option>
+              <option value="12.0" selected>Rings / Studs / Daily Wear (Default: 12%)</option>
+              <option value="14.0">Necklace / Hanging Drops (Default: 14%)</option>
+              <option value="18.0">Antique / Temple / Nagas Jewelry (Default: 18%)</option>
+              <option value="22.0">Bridal Haram / Heavy Choker (Default: 22%)</option>
+              <option value="custom">Custom Ornament (Manual Input)</option>
+            </select>
+          </div>
+
+          <!-- Making Charges / Wastage (VA %) Editable Input + Slider -->
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <label class="text-xs font-bold uppercase text-gray-300 tracking-wider">
+                Making Charges / Wastage (VA)
+              </label>
+              <!-- Directly Editable Box -->
+              <div class="relative w-28">
+                <input type="number" id="calc-va-input" value="12.0" min="0" max="40" step="0.1"
+                  class="w-full pl-3 pr-7 py-1 bg-gray-900 border border-gray-700 rounded-lg text-gold-400 font-extrabold text-right text-sm focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500"
+                  oninput="onVaInput(this.value)">
+                <span class="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none text-xs text-gray-400 font-bold">%</span>
+              </div>
+            </div>
+            <input type="range" id="calc-va-slider" min="0" max="30" value="12" step="0.5"
+              class="w-full accent-gold-500 bg-gray-800 h-2 rounded-lg cursor-pointer"
+              oninput="onVaSlider(this.value)">
+            <div class="flex justify-between text-[11px] text-gray-500 mt-1.5">
+              <span>Coin (2%)</span>
+              <span>Chain (8%)</span>
+              <span>Bangle (10%)</span>
+              <span>Antique (18%)</span>
+              <span>Bridal (22%)</span>
+            </div>
+          </div>
+
+          <!-- Hallmarking Option -->
+          <div class="flex items-center justify-between p-3.5 rounded-xl bg-gray-900 border border-gray-800">
+            <div class="flex items-center space-x-3">
+              <i class="fa-solid fa-stamp text-gold-400 text-lg"></i>
+              <div>
+                <p class="text-xs font-bold text-white">BIS HUID Hallmarking Fee</p>
+                <p class="text-[11px] text-gray-400">Mandatory BIS certificate fee per item</p>
+              </div>
+            </div>
+            <span class="text-xs font-bold text-white">₹ 53.10 <span class="text-[10px] text-gray-400">(incl. GST)</span></span>
+          </div>
+
+        </div>
+
+        <!-- Receipt Summary Column -->
+        <div class="lg:col-span-5 bg-[#0E1424] rounded-2xl p-6 border border-gray-800 shadow-xl space-y-4">
+          <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+            <span class="text-xs font-bold uppercase tracking-wider text-gray-400">Estimate Breakdown</span>
+            <span class="text-xs text-gold-400 font-semibold" id="receipt-date">Live Rate</span>
+          </div>
+
+          <div class="space-y-2.5 text-xs">
+            <div class="flex justify-between">
+              <span class="text-gray-400">22K Gold Value (<span id="rc-weight">16.00</span>g):</span>
+              <span class="font-bold text-white" id="rc-gold-val">₹ 1,84,896</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-400">Making Charges / VA (<span id="rc-va-pct">12%</span>):</span>
+              <span class="font-bold text-white" id="rc-va-val">₹ 22,188</span>
+            </div>
+            <div class="flex justify-between pt-2 border-t border-gray-800 text-gray-300 font-medium">
+              <span>Subtotal (Taxable):</span>
+              <span class="font-bold text-white" id="rc-subtotal">₹ 2,07,084</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-400">GST (3% on Gold + Making):</span>
+              <span class="font-bold text-white" id="rc-gst">₹ 6,213</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-400">BIS Hallmarking Fee:</span>
+              <span class="font-bold text-white">₹ 53</span>
+            </div>
+          </div>
+
+          <!-- Total Bill Pill -->
+          <div class="pt-4 border-t-2 border-dashed border-gray-800">
+            <div class="p-4 rounded-xl gold-gradient text-black flex items-center justify-between shadow-lg shadow-gold-500/10">
+              <div>
+                <p class="text-[10px] uppercase font-bold tracking-wider opacity-80">Estimated Final Bill</p>
+                <p class="text-2xl sm:text-3xl font-black tracking-tight" id="rc-grand-total">₹ 2,13,350</p>
+              </div>
+              <i class="fa-solid fa-bag-shopping text-2xl opacity-80"></i>
+            </div>
+            <p class="text-[10px] text-gray-400 text-center mt-2.5">
+              *Approximate retail estimate. Exact billing may vary slightly by jeweler.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION: LANDED COST IMPORT AUDIT -->
+    <section class="card-glass rounded-2xl p-6 border border-gray-800">
+      <details class="group">
+        <summary class="flex items-center justify-between cursor-pointer list-none text-sm font-bold text-white">
+          <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-file-invoice-dollar text-gold-400"></i>
+            <span>How is this rate calculated? (Landed Cost & Tariff Audit)</span>
+          </div>
+          <span class="text-xs text-gold-400 group-open:rotate-180 transition-transform">
+            <i class="fa-solid fa-chevron-down"></i>
+          </span>
+        </summary>
+        
+        <div class="mt-4 pt-4 border-t border-gray-800 overflow-x-auto text-xs">
+          <table class="w-full text-left">
+            <thead>
+              <tr class="text-gray-400 border-b border-gray-800 pb-2">
+                <th class="py-2">Step</th>
+                <th class="py-2">Component</th>
+                <th class="py-2">Formula / Calculation</th>
+                <th class="py-2 text-right">Value</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800/60 text-gray-300">
+              <tr>
+                <td class="py-2.5 font-bold text-gold-400">1</td>
+                <td>Global Spot per Gram (USD)</td>
+                <td>Spot ($/oz) ÷ 31.1035 grams</td>
+                <td class="py-2.5 text-right font-mono" id="audit-usd-g">$114.33</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 font-bold text-gold-400">2</td>
+                <td>Base Domestic Cost (INR/g)</td>
+                <td>USD/g × Live USD/INR Rate</td>
+                <td class="py-2.5 text-right font-mono" id="audit-inr-base">₹ 10,674.60</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 font-bold text-gold-400">3</td>
+                <td>Import Duty & Cess (6%)</td>
+                <td>5% Basic Customs Duty + 1% AIDC Cess</td>
+                <td class="py-2.5 text-right font-mono text-amber-400" id="audit-duty">+ ₹ 640.48</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 font-bold text-gold-400">4</td>
+                <td>Landed Bullion Cost at Port</td>
+                <td>Base INR + Customs Duty</td>
+                <td class="py-2.5 text-right font-mono" id="audit-landed">₹ 11,315.08</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 font-bold text-gold-400">5</td>
+                <td>MJDMA Physical Premium</td>
+                <td>Local Chennai demand & bank import margin (<span id="audit-premium-pct">11.41%</span>)</td>
+                <td class="py-2.5 text-right font-mono text-purple-400" id="audit-premium-val">+ ₹ 1,291.05</td>
+              </tr>
+              <tr class="font-bold text-white bg-gray-900/40">
+                <td class="py-2.5 text-gold-400">6</td>
+                <td>24K Pure Gold Board Rate</td>
+                <td>Landed Cost + MJDMA Premium (Rounded)</td>
+                <td class="py-2.5 text-right font-mono text-blue-400" id="audit-24k-final">₹ 12,607 / g</td>
+              </tr>
+              <tr class="font-bold text-white bg-gray-900/40">
+                <td class="py-2.5 text-gold-400">7</td>
+                <td>22K Standard Gold Board Rate</td>
+                <td>24K Board Rate × (22 / 24)</td>
+                <td class="py-2.5 text-right font-mono text-emerald-400" id="audit-22k-final">₹ 11,556 / g</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </section>
+
+    <!-- SECTION: DAILY, WEEKLY & MONTHLY MARKET REPORTS -->
+    <section id="reports" class="card-glass rounded-3xl p-6 sm:p-8 border border-gray-800 shadow-2xl space-y-6">
+      
+      <!-- Section Header & Controls -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-gray-800">
+        <div>
+          <div class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-gold-500/10 text-gold-400 text-xs font-bold uppercase tracking-wide mb-1.5">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>Tamil Nadu Market Intelligence</span>
+          </div>
+          <h3 class="text-2xl sm:text-3xl font-extrabold text-white">
+            Daily, Weekly & Monthly Reports
+          </h3>
+          <p class="text-xs sm:text-sm text-gray-400 mt-0.5">
+            Historical price analytics, fluctuation ranges, and sovereign benchmark trends.
+          </p>
+        </div>
+
+        <!-- Timeframe Switcher Tabs & Export Tools -->
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Timeframe Pills -->
+          <div class="inline-flex bg-gray-900 p-1 rounded-xl border border-gray-700 text-xs font-bold">
+            <button id="tab-rep-daily" onclick="setReportTimeframe('daily')" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white transition-all">Daily</button>
+            <button id="tab-rep-weekly" onclick="setReportTimeframe('weekly')" class="px-3 py-1.5 rounded-lg bg-gold-500 text-black shadow-sm transition-all">Weekly (7D)</button>
+            <button id="tab-rep-monthly" onclick="setReportTimeframe('monthly')" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white transition-all">Monthly (30D)</button>
+          </div>
+
+          <!-- Export CSV -->
+          <button onclick="exportReportCSV()" title="Export CSV Ledger" class="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 text-xs font-semibold flex items-center space-x-1.5 transition-all">
+            <i class="fa-solid fa-file-csv text-emerald-400"></i>
+            <span class="hidden sm:inline">Export CSV</span>
+          </button>
+
+          <!-- Print / PDF Report -->
+          <button onclick="window.print()" title="Print / Save PDF" class="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 text-xs font-semibold flex items-center space-x-1.5 transition-all">
+            <i class="fa-solid fa-print text-gold-400"></i>
+            <span class="hidden sm:inline">Print / PDF</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Summary Cards (Dynamic for Daily / Weekly / Monthly) -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="report-kpis">
+        <!-- Rendered dynamically via JS -->
+      </div>
+
+      <!-- Interactive SVG Chart -->
+      <div class="bg-[#0E1424] rounded-2xl p-5 border border-gray-800/80">
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-xs font-bold uppercase tracking-wider text-gray-300 flex items-center space-x-2">
+            <i class="fa-solid fa-wave-square text-gold-400"></i>
+            <span id="chart-title">22K Sovereign (8g) 7-Day Trend</span>
+          </span>
+          <span class="text-xs text-gold-400 font-semibold" id="chart-stat"></span>
+        </div>
+        <div id="svg-chart-container" class="w-full h-48 sm:h-56">
+          <!-- Rendered dynamically via SVG -->
+        </div>
+      </div>
+
+      <!-- Historical Ledger Table -->
+      <div class="overflow-x-auto rounded-2xl border border-gray-800 bg-[#0E1424]">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-gray-900/80 text-gray-400 border-b border-gray-800 uppercase tracking-wider font-semibold text-[11px]">
+            <tr>
+              <th class="py-3 px-4">Date</th>
+              <th class="py-3 px-4">22K 1 Sovereign (8g)</th>
+              <th class="py-3 px-4">22K 1 Gram</th>
+              <th class="py-3 px-4">24K 1 Gram</th>
+              <th class="py-3 px-4">USD/INR</th>
+              <th class="py-3 px-4">Spot ($/oz)</th>
+              <th class="py-3 px-4 text-right">Daily Change</th>
+            </tr>
+          </thead>
+          <tbody id="report-table-body" class="divide-y divide-gray-800/60 text-gray-300 font-medium">
+            <!-- Rendered dynamically via JS -->
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- API Settings Modal -->
+  <div id="api-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-[#111827] border border-gray-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-gray-800">
+        <h3 class="text-base font-bold text-white flex items-center space-x-2">
+          <i class="fa-solid fa-sliders text-gold-400"></i>
+          <span>Live API Sources & Configuration</span>
+        </h3>
+        <button onclick="toggleApiModal(false)" class="text-gray-400 hover:text-white">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="block font-bold text-gray-300 mb-1">USD to INR Exchange Rate API</label>
+          <input type="text" value="https://open.er-api.com/v6/latest/USD" readonly
+            class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2 text-gray-400 font-mono text-[11px]">
+          <p class="text-[10px] text-gray-500 mt-1">Free open endpoint. No key required. Updates hourly.</p>
+        </div>
+
+        <div>
+          <label class="block font-bold text-gray-300 mb-1">Gold Spot (XAU/USD) Provider</label>
+          <select id="gold-provider-select" onchange="onProviderChange()" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white font-medium">
+            <option value="public">Free Open Metal Feed (Zero Key Required)</option>
+            <option value="goldapi">GoldAPI.io (Free Key / Tick-by-tick)</option>
+            <option value="manual">Manual / Custom Spot Price</option>
+          </select>
+        </div>
+
+        <div id="goldapi-key-box" class="hidden">
+          <label class="block font-bold text-gray-300 mb-1">GoldAPI.io Access Token</label>
+          <input type="password" id="goldapi-key-input" placeholder="Paste your free key from goldapi.io"
+            class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white font-mono text-xs">
+          <p class="text-[10px] text-gray-500 mt-1">Get a free key in 30 seconds at <a href="https://www.goldapi.io" target="_blank" class="text-gold-400 underline">goldapi.io</a> (no credit card).</p>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-gray-800 flex justify-end space-x-2">
+        <button onclick="toggleApiModal(false)" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white">Cancel</button>
+        <button onclick="saveApiSettings()" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-gold-500 hover:bg-gold-400 text-black shadow-md">Save & Sync Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-gray-800/80 bg-[#0A0D16] py-6 text-center text-xs text-gray-500">
+    <div class="max-w-7xl mx-auto px-4">
+      <p class="text-gray-400">Tamil Nadu Gold Rate Live Tracker & Calculator • Built for Netlify / Vercel</p>
+      <p class="mt-1 text-[11px]">Auto-updates every 1 hour via live financial APIs.</p>
+    </div>
+  </footer>
+
+  <!-- Core JavaScript: Both USD/INR & Gold Spot Live Automation -->
+  <script>
+    const TROY_OUNCE_GRAMS = 31.1034768;
+    const CUSTOMS_DUTY_PCT = 0.06; // 6%
+    const GST_PCT = 0.03;          // 3%
+    const CACHE_KEY_FX = 'tn_gold_fx_cache';
+    const CACHE_KEY_SPOT = 'tn_gold_spot_cache';
+    const CACHE_KEY_SETTINGS = 'tn_gold_settings';
+    const CACHE_TTL_MS = 60 * 60 * 1000; // 1 Hour
+
+    let priceMode = 'board'; // 'board' or 'retail'
+    let weightUnit = 'grams'; // 'grams' or 'pavan'
+    let isManualGold = false;
+
+    function formatINR(val) {
+      return '₹ ' + Math.round(val).toLocaleString('en-IN');
+    }
+
+    // --- 1. USD / INR API ---
+    async function getUsdInrRate(force = false) {
+      const cached = localStorage.getItem(CACHE_KEY_FX);
+      if (cached && !force) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (Date.now() - parsed.timestamp < CACHE_TTL_MS) {
+            updateFxUI(new Date(parsed.timestamp), true);
+            return parsed.rate;
+          }
+        } catch (e) {}
+      }
+
+      try {
+        const res = await fetch('https://open.er-api.com/v6/latest/USD');
+        if (!res.ok) throw new Error('FX API Error');
+        const data = await res.json();
+        const rate = data.rates.INR;
+        localStorage.setItem(CACHE_KEY_FX, JSON.stringify({ rate, timestamp: Date.now() }));
+        updateFxUI(new Date(), false);
+        return rate;
+      } catch (err) {
+        console.warn('FX API offline, using fallback:', err);
+        const fallback = cached ? JSON.parse(cached).rate : 0;
+        updateFxUI(new Date(), true);
+        return fallback;
+      }
+    }
+
+    function updateFxUI(dateObj, fromCache) {
+      const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const label = document.getElementById('fx-time-label');
+      if (label) label.innerText = fromCache ? `Cached (${timeStr})` : `Live (${timeStr})`;
+    }
+
+    // --- 2. GOLD SPOT (XAU/USD) LIVE API ---
+    async function getGoldSpotRate(force = false) {
+      if (isManualGold && !force) {
+        return parseFloat(document.getElementById('spot-price-input').value) || 3556.00;
+      }
+
+      const settings = getSavedSettings();
+      const cached = localStorage.getItem(CACHE_KEY_SPOT);
+
+      if (cached && !force) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (Date.now() - parsed.timestamp < CACHE_TTL_MS) {
+            updateGoldUI(new Date(parsed.timestamp), true, parsed.source || 'Live API');
+            return parsed.price;
+          }
+        } catch (e) {}
+      }
+
+      // Try GoldAPI.io if key is configured
+      if (settings.provider === 'goldapi' && settings.apiKey) {
+        try {
+          const res = await fetch('https://www.goldapi.io/api/XAU/USD', {
+            headers: { 'x-access-token': settings.apiKey, 'Content-Type': 'application/json' }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            const price = parseFloat(data.price);
+            if (price > 1000) {
+              localStorage.setItem(CACHE_KEY_SPOT, JSON.stringify({ price, timestamp: Date.now(), source: 'GoldAPI.io' }));
+              updateGoldUI(new Date(), false, 'GoldAPI.io');
+              return price;
+            }
+          }
+        } catch (err) {
+          console.warn('GoldAPI error:', err);
+        }
+      }
+
+      // Fallback to open public currency metals feed (No key required)
+      try {
+        const res = await fetch('https://latest.currency-api.pages.dev/v1/currencies/xau.json');
+        if (res.ok) {
+          const data = await res.json();
+          const price = data && data.xau && data.xau.usd ? parseFloat(data.xau.usd) : null;
+          if (price && price > 1000) {
+            localStorage.setItem(CACHE_KEY_SPOT, JSON.stringify({ price, timestamp: Date.now(), source: 'Open Metal Feed' }));
+            updateGoldUI(new Date(), false, 'Open Metal Feed');
+            return price;
+          }
+        }
+      } catch (err) {
+        console.warn('Public metals feed failed, checking secondary:', err);
+      }
+
+      // Final fallback: use cached or default $3,556.00
+      const fallbackPrice = cached ? JSON.parse(cached).price : 3556.00;
+      updateGoldUI(new Date(), true, 'Default / Cache');
+      return fallbackPrice;
+    }
+
+    function updateGoldUI(dateObj, fromCache, source) {
+      const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const label = document.getElementById('gold-time-label');
+      if (label) {
+        label.innerText = fromCache ? `${source} (${timeStr})` : `${source} Live`;
+      }
+    }
+
+    function onManualGoldInput() {
+      isManualGold = true;
+      const label = document.getElementById('gold-time-label');
+      if (label) label.innerText = 'Manual Input';
+      recalculateAll();
+    }
+
+    // --- 3. REFRESH BOTH LIVE APIS ---
+    async function handleManualSync() {
+      const icon = document.getElementById('sync-icon');
+      if (icon) icon.classList.add('fa-spin');
+
+      isManualGold = false; // Reset to live API mode
+
+      const [fxRate, spotPrice] = await Promise.all([
+        getUsdInrRate(true),
+        getGoldSpotRate(true)
+      ]);
+
+      document.getElementById('fx-rate-input').value = fxRate.toFixed(2);
+      document.getElementById('fx-rate-display').innerText = '₹ ' + fxRate.toFixed(2);
+
+      document.getElementById('spot-price-input').value = spotPrice.toFixed(2);
+      document.getElementById('gold-spot-display').innerText = '$' + spotPrice.toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+      recalculateAll();
+
+      if (icon) icon.classList.remove('fa-spin');
+    }
+
+    // --- 4. CALCULATION ENGINE ---
+    function recalculateAll() {
+      const spotUsd = parseFloat(document.getElementById('spot-price-input').value) || 3556.00;
+      const usdInr = parseFloat(document.getElementById('fx-rate-input').value) || 0;
+      const premiumPct = parseFloat(document.getElementById('premium-select').value) || 11.41;
+
+      // Update Header Spot ticker
+      document.getElementById('gold-spot-display').innerText = '$' + spotUsd.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      document.getElementById('fx-rate-display').innerText = '₹ ' + usdInr.toFixed(2);
+
+      // Formulas
+      const usdPerGram = spotUsd / TROY_OUNCE_GRAMS;
+      const inrBasePerGram = usdPerGram * usdInr;
+      const dutyPerGram = inrBasePerGram * CUSTOMS_DUTY_PCT;
+      const landedCost = inrBasePerGram + dutyPerGram;
+      const premiumPerGram = landedCost * (premiumPct / 100);
+      const benchmark24k = landedCost + premiumPerGram;
+
+      const board24k_1g = Math.round(benchmark24k);
+      const board24k_8g = board24k_1g * 8;
+      const board22k_1g = Math.round(board24k_1g * (22 / 24));
+      const board22k_8g = board22k_1g * 8;
+
+      const retail24k_1g = Math.round(board24k_1g * (1 + GST_PCT));
+      const retail24k_8g = Math.round(board24k_8g * (1 + GST_PCT));
+      const retail22k_1g = Math.round(board22k_1g * (1 + GST_PCT));
+      const retail22k_8g = Math.round(board22k_8g * (1 + GST_PCT));
+
+      const isRetail = (priceMode === 'retail');
+      const display22k_8g = isRetail ? retail22k_8g : board22k_8g;
+      const display22k_1g = isRetail ? retail22k_1g : board22k_1g;
+      const display24k_1g = isRetail ? retail24k_1g : board24k_1g;
+      const display24k_8g = isRetail ? retail24k_8g : board24k_8g;
+
+      document.getElementById('hero-22k-sovereign').innerText = formatINR(display22k_8g);
+      document.getElementById('rate-22k-1g').innerText = formatINR(display22k_1g);
+      document.getElementById('rate-24k-1g').innerText = formatINR(display24k_1g);
+      document.getElementById('rate-24k-8g').innerText = formatINR(display24k_8g);
+
+      document.getElementById('hero-unit-tag').innerText = isRetail ? '/ 8g (incl. 3% GST)' : '/ 8 Grams Board';
+      document.getElementById('hero-subtitle').innerHTML = isRetail
+        ? '<i class="fa-solid fa-receipt"></i> <span>Retail Take-Home Price including 3% GST</span>'
+        : '<i class="fa-solid fa-circle-check"></i> <span>Official Daily MJDMA Shop Board Display Benchmark</span>';
+
+      // Audit table
+      document.getElementById('audit-usd-g').innerText = '$' + usdPerGram.toFixed(2);
+      document.getElementById('audit-inr-base').innerText = '₹ ' + inrBasePerGram.toFixed(2);
+      document.getElementById('audit-duty').innerText = '+ ₹ ' + dutyPerGram.toFixed(2);
+      document.getElementById('audit-landed').innerText = '₹ ' + landedCost.toFixed(2);
+      document.getElementById('audit-premium-pct').innerText = premiumPct.toFixed(2) + '%';
+      document.getElementById('audit-premium-val').innerText = '+ ₹ ' + premiumPerGram.toFixed(2);
+      document.getElementById('audit-24k-final').innerText = formatINR(board24k_1g) + ' / g';
+      document.getElementById('audit-22k-final').innerText = formatINR(board22k_1g) + ' / g';
+
+      calculateJewelryBill();
+      syncTodayRecord(board24k_1g, board22k_1g, board22k_8g, spotUsd, usdInr);
+    }
+
+    // --- 5. JEWELRY BILL ESTIMATOR ---
+    function onOrnamentChange() {
+      const select = document.getElementById('ornament-select');
+      const val = select.value;
+      if (val !== 'custom') {
+        const numVal = parseFloat(val);
+        document.getElementById('calc-va-input').value = numVal.toFixed(1);
+        document.getElementById('calc-va-slider').value = numVal;
+      }
+      calculateJewelryBill();
+    }
+
+    function onVaInput(val) {
+      const numVal = parseFloat(val) || 0;
+      document.getElementById('calc-va-slider').value = Math.min(numVal, 30);
+      syncOrnamentDropdown(numVal);
+      calculateJewelryBill();
+    }
+
+    function onVaSlider(val) {
+      const numVal = parseFloat(val) || 0;
+      document.getElementById('calc-va-input').value = numVal.toFixed(1);
+      syncOrnamentDropdown(numVal);
+      calculateJewelryBill();
+    }
+
+    function syncOrnamentDropdown(val) {
+      const select = document.getElementById('ornament-select');
+      let matched = false;
+      for (let i = 0; i < select.options.length; i++) {
+        if (parseFloat(select.options[i].value) === val) {
+          select.selectedIndex = i;
+          matched = true;
+          break;
+        }
+      }
+      if (!matched) {
+        select.value = 'custom';
+      }
+    }
+
+    function calculateJewelryBill() {
+      const inputWeight = parseFloat(document.getElementById('calc-weight').value) || 0;
+      const weightInGrams = (weightUnit === 'pavan') ? inputWeight * 8 : inputWeight;
+      const vaPct = parseFloat(document.getElementById('calc-va-input').value) || 0;
+
+      const spotUsd = parseFloat(document.getElementById('spot-price-input').value) || 3556.00;
+      const usdInr = parseFloat(document.getElementById('fx-rate-input').value) || 93.37;
+      const premiumPct = parseFloat(document.getElementById('premium-select').value) || 11.41;
+
+      const usdPerGram = spotUsd / TROY_OUNCE_GRAMS;
+      const landedCost = (usdPerGram * usdInr) * 1.06;
+      const benchmark24k = landedCost * (1 + premiumPct / 100);
+      const board22k_1g = Math.round(benchmark24k * (22 / 24));
+
+      const goldCost = Math.round(weightInGrams * board22k_1g);
+      const makingCost = Math.round(goldCost * (vaPct / 100));
+      const subtotal = goldCost + makingCost;
+      const gst = Math.round(subtotal * GST_PCT);
+      const hallmarking = (weightInGrams > 0) ? 53.10 : 0;
+      const grandTotal = Math.round(subtotal + gst + hallmarking);
+
+      document.getElementById('rc-weight').innerText = weightInGrams.toFixed(2);
+      document.getElementById('rc-gold-val').innerText = formatINR(goldCost);
+      document.getElementById('rc-va-pct').innerText = vaPct.toFixed(1) + '%';
+      document.getElementById('rc-va-val').innerText = formatINR(makingCost);
+      document.getElementById('rc-subtotal').innerText = formatINR(subtotal);
+      document.getElementById('rc-gst').innerText = formatINR(gst);
+      document.getElementById('rc-grand-total').innerText = formatINR(grandTotal);
+    }
+
+    function setWeightUnit(unit) {
+      weightUnit = unit;
+      const isPavan = (unit === 'pavan');
+      document.getElementById('unit-grams').className = isPavan ? 'px-3 py-1 rounded-md font-bold text-gray-400 hover:text-white' : 'px-3 py-1 rounded-md font-bold bg-gold-500 text-black';
+      document.getElementById('unit-pavan').className = isPavan ? 'px-3 py-1 rounded-md font-bold bg-gold-500 text-black' : 'px-3 py-1 rounded-md font-bold text-gray-400 hover:text-white';
+      document.getElementById('calc-unit-label').innerText = isPavan ? 'Pavans' : 'Grams';
+      calculateJewelryBill();
+    }
+
+    function setWeightPreset(grams) {
+      if (weightUnit === 'pavan') {
+        document.getElementById('calc-weight').value = (grams / 8);
+      } else {
+        document.getElementById('calc-weight').value = grams;
+      }
+      calculateJewelryBill();
+    }
+
+    function setPriceMode(mode) {
+      priceMode = mode;
+      const isRetail = (mode === 'retail');
+      document.getElementById('mode-board').className = isRetail ? 'py-2 rounded-lg transition-all text-center text-gray-400 hover:text-white' : 'py-2 rounded-lg transition-all text-center bg-gold-500 text-black shadow-sm font-bold';
+      document.getElementById('mode-retail').className = isRetail ? 'py-2 rounded-lg transition-all text-center bg-gold-500 text-black shadow-sm font-bold' : 'py-2 rounded-lg transition-all text-center text-gray-400 hover:text-white';
+      recalculateAll();
+    }
+
+    // --- 6. SETTINGS MODAL ---
+    function getSavedSettings() {
+      try {
+        return JSON.parse(localStorage.getItem(CACHE_KEY_SETTINGS)) || { provider: 'public', apiKey: '' };
+      } catch (e) {
+        return { provider: 'public', apiKey: '' };
+      }
+    }
+
+    function toggleApiModal(show) {
+      const modal = document.getElementById('api-modal');
+      if (modal) modal.classList.toggle('hidden', !show);
+      if (show) {
+        const s = getSavedSettings();
+        document.getElementById('gold-provider-select').value = s.provider || 'public';
+        document.getElementById('goldapi-key-input').value = s.apiKey || '';
+        onProviderChange();
+      }
+    }
+
+    function onProviderChange() {
+      const p = document.getElementById('gold-provider-select').value;
+      const box = document.getElementById('goldapi-key-box');
+      if (box) box.classList.toggle('hidden', p !== 'goldapi');
+    }
+
+    function saveApiSettings() {
+      const provider = document.getElementById('gold-provider-select').value;
+      const apiKey = document.getElementById('goldapi-key-input').value.trim();
+      localStorage.setItem(CACHE_KEY_SETTINGS, JSON.stringify({ provider, apiKey }));
+      toggleApiModal(false);
+      handleManualSync();
+    }
+
+    // --- 7. DAILY, WEEKLY & MONTHLY REPORT ENGINE ---
+    const CACHE_KEY_HIST = 'tn_gold_history_data';
+    let reportTimeframe = 'weekly'; // 'daily', 'weekly', 'monthly'
+
+    function getHistoryData() {
+      const cached = localStorage.getItem(CACHE_KEY_HIST);
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        } catch (e) {}
+      }
+
+      // 30-Day seeded data ending today
+      const baseDate = new Date('2026-11-21T09:30:00+05:30');
+      const seed = [
+        { d: -30, spot: 3510, fx: 92.50, diff: -150 },
+        { d: -29, spot: 3515, fx: 92.55, diff: +120 },
+        { d: -28, spot: 3522, fx: 92.60, diff: +210 },
+        { d: -27, spot: 3518, fx: 92.58, diff: -90 },
+        { d: -26, spot: 3525, fx: 92.65, diff: +180 },
+        { d: -25, spot: 3530, fx: 92.70, diff: +240 },
+        { d: -24, spot: 3528, fx: 92.68, diff: -50 },
+        { d: -23, spot: 3535, fx: 92.75, diff: +220 },
+        { d: -22, spot: 3540, fx: 92.80, diff: +190 },
+        { d: -21, spot: 3538, fx: 92.78, diff: -70 },
+        { d: -20, spot: 3545, fx: 92.85, diff: +230 },
+        { d: -19, spot: 3542, fx: 92.82, diff: -80 },
+        { d: -18, spot: 3550, fx: 92.90, diff: +280 },
+        { d: -17, spot: 3555, fx: 92.95, diff: +160 },
+        { d: -16, spot: 3552, fx: 92.92, diff: -110 },
+        { d: -15, spot: 3558, fx: 93.00, diff: +240 },
+        { d: -14, spot: 3562, fx: 93.05, diff: +150 },
+        { d: -13, spot: 3560, fx: 93.02, diff: -80 },
+        { d: -12, spot: 3568, fx: 93.10, diff: +310 },
+        { d: -11, spot: 3572, fx: 93.15, diff: +170 },
+        { d: -10, spot: 3565, fx: 93.08, diff: -280 },
+        { d: -9,  spot: 3570, fx: 93.12, diff: +190 },
+        { d: -8,  spot: 3575, fx: 93.18, diff: +220 },
+        { d: -7,  spot: 3570, fx: 93.15, diff: -180 },
+        { d: -6,  spot: 3565, fx: 93.10, diff: -210 },
+        { d: -5,  spot: 3558, fx: 93.05, diff: -260 },
+        { d: -4,  spot: 3550, fx: 93.00, diff: -310 },
+        { d: -3,  spot: 3555, fx: 93.08, diff: +200 },
+        { d: -2,  spot: 3556, fx: 93.00, diff: -470 },
+        { d: -1,  spot: 3556, fx: 93.00, diff: 0 },
+        { d: 0,   spot: 3556, fx: 93.37, diff: +368 }
+      ];
+
+      const list = seed.map(item => {
+        const d = new Date(baseDate);
+        d.setDate(d.getDate() + item.d);
+        const dateStr = d.toISOString().split('T')[0];
+        const usdPerG = item.spot / TROY_OUNCE_GRAMS;
+        const landed = (usdPerG * item.fx) * 1.06;
+        const b24k = Math.round(landed * 1.1141);
+        const b22k = Math.round(b24k * (22 / 24));
+        const sov = b22k * 8;
+        return {
+          date: dateStr,
+          spot: item.spot,
+          fx: item.fx,
+          board24k: b24k,
+          board22k: b22k,
+          sovereign: sov,
+          diff: item.diff
+        };
+      });
+
+      localStorage.setItem(CACHE_KEY_HIST, JSON.stringify(list));
+      return list;
+    }
+
+    function syncTodayRecord(b24k, b22k, sov, spot, fx) {
+      const history = getHistoryData();
+      const todayStr = new Date().toISOString().split('T')[0];
+      const existingIdx = history.findIndex(h => h.date === todayStr);
+
+      const yesterday = (existingIdx > 0) ? history[existingIdx - 1] : history[history.length - 1];
+      const diff = yesterday ? (sov - yesterday.sovereign) : 0;
+
+      const record = {
+        date: todayStr,
+        spot: Math.round(spot),
+        fx: parseFloat(fx.toFixed(2)),
+        board24k: b24k,
+        board22k: b22k,
+        sovereign: sov,
+        diff: diff
+      };
+
+      if (existingIdx >= 0) {
+        history[existingIdx] = record;
+      } else {
+        history.push(record);
+        if (history.length > 90) history.shift();
+      }
+
+      localStorage.setItem(CACHE_KEY_HIST, JSON.stringify(history));
+      renderReports();
+    }
+
+    function setReportTimeframe(mode) {
+      reportTimeframe = mode;
+      ['daily', 'weekly', 'monthly'].forEach(m => {
+        const btn = document.getElementById(`tab-rep-${m}`);
+        if (btn) {
+          btn.className = (m === mode)
+            ? 'px-3 py-1.5 rounded-lg bg-gold-500 text-black shadow-sm transition-all'
+            : 'px-3 py-1.5 rounded-lg text-gray-400 hover:text-white transition-all';
+        }
+      });
+      renderReports();
+    }
+
+    function renderReports() {
+      const history = getHistoryData();
+      if (!history || history.length === 0) return;
+
+      let sliceCount = 7;
+      if (reportTimeframe === 'daily') sliceCount = 2;
+      else if (reportTimeframe === 'weekly') sliceCount = 7;
+      else if (reportTimeframe === 'monthly') sliceCount = 30;
+
+      const data = history.slice(-sliceCount);
+      const latest = data[data.length - 1];
+      const first = data[0];
+
+      const sovPrices = data.map(d => d.sovereign);
+      const high = Math.max(...sovPrices);
+      const low = Math.min(...sovPrices);
+      const avg = Math.round(sovPrices.reduce((a, b) => a + b, 0) / sovPrices.length);
+
+      const netDiff = latest.sovereign - first.sovereign;
+      const netPct = ((netDiff / first.sovereign) * 100).toFixed(2);
+      const isPositive = netDiff >= 0;
+
+      // 1. Render KPIs
+      const kpiContainer = document.getElementById('report-kpis');
+      if (kpiContainer) {
+        let periodName = reportTimeframe === 'daily' ? "Today's Movement" : (reportTimeframe === 'weekly' ? '7-Day Net Change' : '30-Day Net Change');
+        kpiContainer.innerHTML = `
+          <div class="card-glass p-4 rounded-xl border border-gray-800">
+            <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Current Sovereign (8g)</p>
+            <p class="text-xl sm:text-2xl font-black text-white mt-1">${formatINR(latest.sovereign)}</p>
+            <p class="text-[10px] text-gray-500 mt-0.5">22K / g: ${formatINR(latest.board22k)}</p>
+          </div>
+          <div class="card-glass p-4 rounded-xl border border-gray-800">
+            <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">${periodName}</p>
+            <p class="text-xl sm:text-2xl font-black ${isPositive ? 'text-emerald-400' : 'text-rose-400'} mt-1">
+              ${isPositive ? '+' : ''}${formatINR(netDiff)}
+            </p>
+            <p class="text-[10px] ${isPositive ? 'text-emerald-400/80' : 'text-rose-400/80'} mt-0.5">
+              ${isPositive ? '▲' : '▼'} ${isPositive ? '+' : ''}${netPct}% in period
+            </p>
+          </div>
+          <div class="card-glass p-4 rounded-xl border border-gray-800">
+            <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Period High / Peak</p>
+            <p class="text-xl sm:text-2xl font-black text-amber-300 mt-1">${formatINR(high)}</p>
+            <p class="text-[10px] text-gray-500 mt-0.5">Resistance level</p>
+          </div>
+          <div class="card-glass p-4 rounded-xl border border-gray-800">
+            <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Period Low / Avg</p>
+            <p class="text-xl sm:text-2xl font-black text-blue-400 mt-1">${formatINR(low)}</p>
+            <p class="text-[10px] text-gray-500 mt-0.5">Avg: ${formatINR(avg)} / pavan</p>
+          </div>
+        `;
+      }
+
+      // 2. Render Title & Stats
+      const chartTitle = document.getElementById('chart-title');
+      const chartStat = document.getElementById('chart-stat');
+      if (chartTitle) {
+        chartTitle.innerText = reportTimeframe === 'daily'
+          ? "Today's Intraday Benchmark"
+          : (reportTimeframe === 'weekly' ? '22K 1 Sovereign (8g) 7-Day Trend' : '22K 1 Sovereign (8g) 30-Day Trend');
+      }
+      if (chartStat) {
+        chartStat.innerText = `Range: ${formatINR(high - low)} | Avg: ${formatINR(avg)}`;
+      }
+
+      // 3. Render Chart
+      renderSvgChart(data, low, high);
+
+      // 4. Render Table
+      const tbody = document.getElementById('report-table-body');
+      if (tbody) {
+        const rows = [...data].reverse();
+        tbody.innerHTML = rows.map(r => {
+          const chg = r.diff || 0;
+          const chgClass = chg > 0 ? 'text-emerald-400 bg-emerald-500/10' : (chg < 0 ? 'text-rose-400 bg-rose-500/10' : 'text-gray-400 bg-gray-800');
+          const chgText = chg > 0 ? `+${formatINR(chg)} ▲` : (chg < 0 ? `${formatINR(chg)} ▼` : '0 -');
+          return `
+            <tr class="hover:bg-gray-800/40 transition-colors">
+              <td class="py-3 px-4 font-mono font-bold text-white">${r.date}</td>
+              <td class="py-3 px-4 font-bold text-amber-300">${formatINR(r.sovereign)}</td>
+              <td class="py-3 px-4 font-semibold text-white">${formatINR(r.board22k)}</td>
+              <td class="py-3 px-4 text-gray-300">${formatINR(r.board24k)}</td>
+              <td class="py-3 px-4 text-gray-400">₹ ${r.fx.toFixed(2)}</td>
+              <td class="py-3 px-4 text-gray-400">$${r.spot}</td>
+              <td class="py-3 px-4 text-right">
+                <span class="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full ${chgClass}">${chgText}</span>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+    }
+
+    function renderSvgChart(data, minVal, maxVal) {
+      const container = document.getElementById('svg-chart-container');
+      if (!container) return;
+
+      const width = container.clientWidth || 700;
+      const height = container.clientHeight || 200;
+      const padX = 40;
+      const padY = 25;
+
+      const range = (maxVal - minVal) || 1;
+      const stepX = (width - padX * 2) / Math.max(data.length - 1, 1);
+
+      const points = data.map((d, i) => {
+        const x = padX + i * stepX;
+        const normY = (d.sovereign - minVal) / range;
+        const y = height - padY - (normY * (height - padY * 2));
+        return { x, y, date: d.date, val: d.sovereign };
+      });
+
+      const polyline = points.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+      const areaPoints = `${padX},${height - padY} ${polyline} ${points[points.length - 1].x.toFixed(1)},${height - padY}`;
+
+      const dots = points.map(p => `
+        <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.5" fill="#F59E0B" stroke="#0B0F19" stroke-width="1.5">
+          <title>${p.date}: ₹${p.val.toLocaleString('en-IN')}</title>
+        </circle>
+      `).join('');
+
+      container.innerHTML = `
+        <svg viewBox="0 0 ${width} ${height}" class="w-full h-full overflow-visible">
+          <defs>
+            <linearGradient id="chartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#F59E0B" stop-opacity="0.0"/>
+            </linearGradient>
+          </defs>
+          <!-- Grid lines -->
+          <line x1="${padX}" y1="${padY}" x2="${width - padX}" y2="${padY}" stroke="#1F2937" stroke-dasharray="3 3"/>
+          <line x1="${padX}" y1="${height / 2}" x2="${width - padX}" y2="${height / 2}" stroke="#1F2937" stroke-dasharray="3 3"/>
+          <line x1="${padX}" y1="${height - padY}" x2="${width - padX}" y2="${height - padY}" stroke="#1F2937"/>
+          
+          <!-- Y-Axis labels -->
+          <text x="${padX - 8}" y="${padY + 4}" fill="#6B7280" font-size="10" text-anchor="end">${formatINR(maxVal)}</text>
+          <text x="${padX - 8}" y="${height - padY + 4}" fill="#6B7280" font-size="10" text-anchor="end">${formatINR(minVal)}</text>
+          
+          <!-- Area fill -->
+          <polygon points="${areaPoints}" fill="url(#chartGrad)"/>
+          
+          <!-- Trend line -->
+          <polyline points="${polyline}" fill="none" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          
+          <!-- Dots -->
+          ${dots}
+        </svg>
+      `;
+    }
+
+    function exportReportCSV() {
+      const history = getHistoryData();
+      let csv = 'Date,Gold Spot ($/oz),USD/INR (INR),24K 1g (INR),22K 1g (INR),22K 1 Sovereign (INR),Daily Change (INR)\n';
+      history.forEach(r => {
+        csv += `${r.date},${r.spot},${r.fx},${r.board24k},${r.board22k},${r.sovereign},${r.diff}\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `TamilNadu_Gold_Report_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // --- 8. INITIALIZATION & BACKGROUND HOURLY CRON ---
+    window.addEventListener('DOMContentLoaded', async () => {
+      // 1. Initial parallel fetch
+      const [fxRate, spotPrice] = await Promise.all([
+        getUsdInrRate(false),
+        getGoldSpotRate(false)
+      ]);
+
+      document.getElementById('fx-rate-input').value = fxRate.toFixed(2);
+      document.getElementById('spot-price-input').value = spotPrice.toFixed(2);
+
+      recalculateAll();
+
+      // 2. Background Hourly Cron (Checks every 5 minutes if 1 hour has elapsed)
+      setInterval(async () => {
+        const cachedFx = localStorage.getItem(CACHE_KEY_FX);
+        if (cachedFx && Date.now() - JSON.parse(cachedFx).timestamp >= CACHE_TTL_MS) {
+          console.log('Hourly Cron: Refreshing live USD/INR and Gold Spot...');
+          await handleManualSync();
+        }
+      }, 5 * 60 * 1000);
+    });
+  </script>
+</body>
+</html>
