@@ -59,44 +59,44 @@
 <body class="bg-[#0B0F19] text-slate-100 min-h-screen antialiased flex flex-col selection:bg-gold-500 selection:text-black">
 
   <!-- Top Announcement / Live Ticker Bar -->
-  <header class="border-b border-gray-800 bg-[#0E1424]/90 sticky top-0 z-50 backdrop-blur-md">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+  <header class="border-b border-gray-800 bg-[#0E1424]/95 sticky top-0 z-50 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       
       <!-- Logo & City Tag -->
-      <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl gold-gradient flex items-center justify-center shadow-lg shadow-gold-500/20 text-black font-extrabold text-xl">
+      <div class="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl gold-gradient flex items-center justify-center shadow-lg shadow-gold-500/20 text-black font-extrabold text-lg sm:text-xl shrink-0">
           <i class="fa-solid fa-coins"></i>
         </div>
-        <div>
-          <div class="flex items-center space-x-2">
-            <h1 class="font-extrabold text-lg sm:text-xl tracking-tight text-white">TN GOLD PULSE</h1>
-            <span class="text-xs bg-gold-500/20 text-gold-300 font-semibold px-2 py-0.5 rounded-full border border-gold-500/30">Chennai / MJDMA</span>
+        <div class="truncate">
+          <div class="flex items-center space-x-1.5 sm:space-x-2">
+            <h1 class="font-extrabold text-base sm:text-xl tracking-tight text-white truncate">TN GOLD PULSE</h1>
+            <span class="text-[10px] sm:text-xs bg-gold-500/20 text-gold-300 font-semibold px-1.5 sm:px-2 py-0.5 rounded-full border border-gold-500/30 shrink-0">Chennai</span>
           </div>
-          <p class="text-xs text-gray-400 hidden sm:block">Tamil Nadu Daily Bullion & Retail Jewelry Benchmark</p>
+          <p class="text-[11px] text-gray-400 hidden sm:block">Tamil Nadu Daily Bullion & Retail Jewelry Benchmark</p>
         </div>
       </div>
 
-      <!-- Live FX & Gold Spot Status Widgets -->
-      <div class="flex items-center space-x-2 sm:space-x-4">
+      <!-- Live FX & Action Buttons -->
+      <div class="flex items-center space-x-1.5 sm:space-x-3 shrink-0">
         
-        <!-- Live Pill: Gold Spot -->
-        <div class="hidden md:flex items-center space-x-2 bg-gray-800/80 border border-gray-700/60 px-3 py-1.5 rounded-lg text-xs">
+        <!-- Live Pill: Gold Spot (Tablet / Desktop) -->
+        <div class="hidden md:flex items-center space-x-2 bg-gray-800/80 border border-gray-700/60 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs">
           <span class="w-2 h-2 rounded-full bg-amber-400 pulse-dot"></span>
-          <span class="text-gray-400">Gold Spot:</span>
+          <span class="text-gray-400">Spot:</span>
           <span id="gold-spot-display" class="font-bold text-gold-300 tracking-wide">$3,556.00</span>
         </div>
 
         <!-- Live Pill: USD/INR -->
-        <div class="flex items-center space-x-2 bg-gray-800/80 border border-gray-700/60 px-3 py-1.5 rounded-lg text-xs">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 pulse-dot"></span>
-          <span class="text-gray-400">USD/INR:</span>
-          <span id="fx-rate-display" class="font-bold text-white tracking-wide">₹ 0</span>
+        <div class="flex items-center space-x-1.5 sm:space-x-2 bg-gray-800/80 border border-gray-700/60 px-2 sm:px-3 py-1.5 rounded-lg text-xs">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 pulse-dot shrink-0"></span>
+          <span class="text-gray-400 hidden sm:inline">USD/INR:</span>
+          <span id="fx-rate-display" class="font-bold text-white tracking-wide text-xs">₹ 93.37</span>
         </div>
 
-        <!-- Sync Button with Spinner (Refreshes BOTH APIs) -->
-        <button id="btn-sync" onclick="handleManualSync()" title="Refresh Gold & USD Rates" class="flex items-center space-x-1.5 bg-gray-800 hover:bg-gray-700 active:scale-95 transition-all text-xs text-gray-300 px-3 py-1.5 rounded-lg border border-gray-700">
+        <!-- Sync Button with Spinner -->
+        <button id="btn-sync" onclick="handleManualSync()" title="Refresh Gold & USD Rates" class="flex items-center space-x-1 bg-gray-800 hover:bg-gray-700 active:scale-95 transition-all text-xs text-gray-300 p-2 sm:px-3 sm:py-1.5 rounded-lg border border-gray-700">
           <i id="sync-icon" class="fa-solid fa-arrows-rotate text-gold-400"></i>
-          <span class="hidden sm:inline" id="sync-text">Sync Live</span>
+          <span class="hidden md:inline" id="sync-text">Sync</span>
         </button>
 
         <!-- API Settings Modal Trigger -->
@@ -105,14 +105,9 @@
         </button>
 
         <!-- Market Report Page Link -->
-        <a href="report.html" class="flex items-center space-x-1.5 bg-gold-500 hover:bg-gold-400 text-black font-extrabold text-xs px-3 py-1.5 rounded-lg shadow-md transition-all">
+        <a href="report.html" class="flex items-center space-x-1 bg-gold-500 hover:bg-gold-400 text-black font-extrabold text-xs px-2.5 sm:px-3.5 py-1.5 rounded-lg shadow-md transition-all">
           <i class="fa-solid fa-chart-column"></i>
-          <span>Reports</span>
-        </a>
-
-        <a href="#estimator" class="hidden lg:inline-flex items-center space-x-1.5 bg-gray-800 hover:bg-gray-700 text-gray-200 font-semibold text-xs px-3 py-1.5 rounded-lg border border-gray-700 transition-all">
-          <i class="fa-solid fa-calculator text-gold-400"></i>
-          <span>Estimator</span>
+          <span class="hidden xs:inline sm:inline">Reports</span>
         </a>
       </div>
 
@@ -120,7 +115,7 @@
   </header>
 
   <!-- Main Content Container -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8 pb-24 md:pb-8 space-y-6 sm:space-y-8">
 
     <!-- Top Controls Banner: Inputs & Toggles -->
     <div class="card-glass rounded-2xl p-5 border border-gray-800 shadow-xl">
@@ -1299,7 +1294,37 @@
           await handleManualSync();
         }
       }, 5 * 60 * 1000);
+      // 3. Responsive Resize Handler for SVG chart
+      let resizeTimer;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => { renderReports(); }, 150);
+      });
     });
   </script>
+
+  <!-- Mobile Bottom Sticky Navigation (App-like feel on iOS & Android) -->
+  <nav class="md:hidden fixed bottom-0 inset-x-0 bg-[#0E1424]/95 border-t border-gray-800 z-50 backdrop-blur-lg px-2 py-1.5 flex items-center justify-around text-[10px] font-semibold text-gray-400">
+    <a href="#" class="flex flex-col items-center py-1 text-gold-400">
+      <i class="fa-solid fa-coins text-base mb-0.5"></i>
+      <span>Rates</span>
+    </a>
+    <a href="#estimator" class="flex flex-col items-center py-1 hover:text-white transition-colors">
+      <i class="fa-solid fa-calculator text-base mb-0.5"></i>
+      <span>Estimator</span>
+    </a>
+    <a href="report.html" class="flex flex-col items-center py-1 hover:text-white transition-colors">
+      <i class="fa-solid fa-chart-column text-base mb-0.5"></i>
+      <span>Reports</span>
+    </a>
+    <button onclick="handleManualSync()" class="flex flex-col items-center py-1 hover:text-white transition-colors">
+      <i class="fa-solid fa-arrows-rotate text-base mb-0.5"></i>
+      <span>Sync Live</span>
+    </button>
+    <button onclick="toggleApiModal(true)" class="flex flex-col items-center py-1 hover:text-white transition-colors">
+      <i class="fa-solid fa-gear text-base mb-0.5"></i>
+      <span>Settings</span>
+    </button>
+  </nav>
 </body>
 </html>
